@@ -21,6 +21,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'image',
+        'birthdate',
+        'about'
     ];
 
     /**
@@ -46,5 +49,10 @@ class User extends Authenticatable
     public function chirps(): HasMany
     {
         return $this->hasMany(Chirp::class);
+    }
+
+    public function likes(): HasMany
+    {
+        return $this->hasMany(Like::class);
     }
 }

@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Chirp;
+use App\Models\Comment;
+use App\Models\Like;
+use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -96,9 +99,40 @@ class ChirpController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Chirp $chirp)
+    public function detail($id)
     {
-        //
+        $chirp = Chirp::with(['user', 'comments.user'])
+            ->where('id', $id)
+            ->first();
+
+        return view('chirps.detail', [
+            'chirp' => $chirp,
+        ]);
+    }
+
+    public function storeComment(Request $request, $id)
+    {
+        $request->validate([
+            'user_id'   => 'required|exists:users,id',
+            'content'   => 'required|string',
+        ]);
+
+        $comment = new Comment([
+            'user_id'   => $request->input('user_id'),
+            'chirp_id'  => $id,
+            'content'   => $request->input('content'),
+        ]);
+
+        $comment->save();
+//        return response()->json(['message' => 'Comment added successfully']);
+        return redirect(route('chirp.detail', ['id' => $id]));
+    }
+
+    public function removeComment(Request $request, $id, $commentId) {
+
+        $comment = Comment::find($commentId);
+        $comment->delete();
+        return redirect(route('chirp.detail', ['id' => $id]));
     }
 
     /**
@@ -127,17 +161,17 @@ class ChirpController extends Controller
             'visible' => [
                 'boolean',
             ],
-//            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        if ($request->image !== null && !is_string($request->image)) {
-            $fileName = time() . '-' . $request->image->getClientOriginalName();
-            $request->image->storeAs('public/images', $fileName);
-            $validated['image'] = $fileName;
-        } elseif (is_string($request->image)) {
-            $validated['image'] = $request->image;
-        } else {
-            $validated['image'] = null;
+        if (!is_string($request->image)) {
+            if ($request->image !== null && !is_string($request->image)) {
+                $fileName = time() . '-' . $request->image->getClientOriginalName();
+                $request->image->storeAs('public/images', $fileName);
+                $validated['image'] = $fileName;
+            } else {
+                $validated['image'] = null;
+            }
         }
 
         $chirp->update($validated);
@@ -156,5 +190,68 @@ class ChirpController extends Controller
         $chirp->delete();
 
         return redirect(route('chirps.index'));
+    }
+
+    public function likeChirp(Request $request, $id)
+    {
+        $chirp = Chirp::findOrFail($id);
+        $user = Auth::user();
+
+        if (!$user->likes()->where('chirp_id', $chirp->id)->exists()) {
+            $like = $user->likes()->create(['chirp_id' => $chirp->id]);
+            $likeCount = $chirp->likesCount(); // Get updated like count
+            return response()->json(['message' => 'Chirp liked successfully', 'like_count' => $likeCount]);
+        }
+
+        return response()->json(['message' => 'User has already liked this chirp']);
+    }
+
+    public function unlikeChirp(Request $request, $id)
+    {
+        $chirp = Chirp::findOrFail($id);
+        $user = Auth::user();
+
+        $like = $user->likes()->where('chirp_id', $chirp->id)->first();
+
+        if ($like) {
+            $like->delete();
+            $likeCount = $chirp->likesCount(); // Get updated like count
+            return response()->json(['message' => 'Chirp unliked successfully', 'like_count' => $likeCount]);
+        }
+
+        return response()->json(['message' => 'User has not liked this chirp']);
+    }
+
+    public function likeComment($commentId)
+    {
+        $user = auth()->user();
+
+        // Check if the user has already liked the comment
+        if (!$user->likes()->where('comment_id', $commentId)->exists()) {
+            // Create a new like for comment
+            Like::create([
+                'user_id' => $user->id,
+                'comment_id' => $commentId,
+            ]);
+
+            return response()->json(['message' => 'Comment liked successfully']);
+        }
+
+        return response()->json(['message' => 'User has already liked this comment']);
+    }
+
+    public function unlikeComment($commentId)
+    {
+        $user = auth()->user();
+
+        // Find and delete the like for comment
+        $like = $user->likes()->where('comment_id', $commentId)->first();
+
+        if ($like) {
+            $like->delete();
+            return response()->json(['message' => 'Comment unliked successfully']);
+        }
+
+        return response()->json(['message' => 'User has not liked this comment']);
     }
 }

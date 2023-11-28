@@ -27,3 +27,11 @@
     color: #f56b6b;
     text-transform: capitalize;
 }
+
+div:where(.swal2-container) button:where(.swal2-styled).swal2-confirm {
+    border: 0;
+    border-radius: 0.25em;
+    background-color: rgb(55 65 81);
+    color: #fff;
+    font-size: 1em;
+}

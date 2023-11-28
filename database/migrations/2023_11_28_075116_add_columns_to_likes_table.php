@@ -9,22 +9,22 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('likes', function (Blueprint $table) {
-            $table->id();
+        Schema::table('likes', function (Blueprint $table) {
             $table->foreignId('user_id')->constrained();
             $table->foreignId('chirp_id')->nullable()->constrained();
             $table->foreignId('comment_id')->nullable()->constrained();
-            $table->timestamps();
         });
     }
 
     /**
      * Reverse the migrations.
      */
-    public function down()
+    public function down(): void
     {
-        Schema::dropIfExists('likes');
+        Schema::table('likes', function (Blueprint $table) {
+            //
+        });
     }
 };
