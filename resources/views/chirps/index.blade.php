@@ -46,11 +46,9 @@
         <div class="mt-6 mb-6">
             <div class="flex space-x-4 items-center">
                 <div class="w-1/3">
-                    <!-- Your first select with class "select2" -->
                     <select class="select2" style="width: 100%;"></select>
                 </div>
                 <div class="w-1/3">
-                    <!-- Your second select with Tailwind styling -->
                     <div class="relative">
                         <select id="sort" class="block form-height appearance-none w-full bg-white border border-gray-300 hover:border-gray-500 px-4 py-2 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500">
                             <option value="1">Latest</option>

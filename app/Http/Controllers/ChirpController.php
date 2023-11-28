@@ -161,7 +161,7 @@ class ChirpController extends Controller
             'visible' => [
                 'boolean',
             ],
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+//            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         if (!is_string($request->image)) {
