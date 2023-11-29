@@ -64,27 +64,13 @@
             <button class="like-button bg-gray-800 hover:bg-gray-700 text-white font-bold py-1 px-4 rounded" data-id="{{ $chirp->id }}" data-liked="{{ $chirp->isLikedByUser(Auth::id()) ? 'true' : 'false' }}">
                 {{ $chirp->isLikedByUser(Auth::id()) === 'true' ? 'Dislike' : 'Like' }}
             </button>
-            <span class="cursor-pointer" id="likes">
-                <i class="far fa-thumbs-up mr-1"></i><span class="cursor-pointer" id="likes-count-{{ $chirp->id }}" data-user-list="{{ json_encode($chirp->likes->pluck('user')) }}">{{ $chirp->likesCount() }}</span>
+            <span class="cursor-pointer" id="likeButton">
+                <i class="far fa-thumbs-up mr-1"></i><span class="cursor-pointer" id="likes-count-{{ $chirp->id }}">{{ $chirp->likesCount() }}</span>
             </span>
             <span id="comment-count-{{ $chirp->id }}"><i class="far fa-comment mr-1"></i>{{ $chirp->commentsCount() }}</span>
         </div>
         </div>
 
-        <script>
-            const userData = JSON.parse(document.getElementById('likes-count-{{ $chirp->id }}').getAttribute('data-user-list'));
-            const profileRoute = "{{ route('profile.show', ['id' => '0']) }}";
-            const route = profileRoute.slice(0, -1);
-
-            const modalContent = userData.map(user => `<a href='${route}${user.id}' class="modal-link"><div class="flex items-center mt-3"><img src="/storage/profilePhotos/${user.image}" alt="${user['name']}" class="rounded-full w-10 h-10 mr-2 object-cover"> <span>${user.name}</span></div></a>`).join('');
-            document.getElementById('likes').addEventListener('click', function () {
-                Swal.fire({
-                    title: 'Liked Users',
-                    html: modalContent,
-                    confirmButtonText: 'Close',
-                });
-            });
-        </script>
         <script>
             $(document).ready(function () {
                 $.ajaxSetup({
@@ -130,11 +116,55 @@
             });
         </script>
 
+        <script>
+            var chirpId = '{{$chirp->id}}'
+            $(document).ready(function () {
+                $('#likeButton').on('click', function () {
+                    $.ajax({
+                        url: '/users-likes/' + chirpId,
+                        method: 'GET',
+                        dataType: 'json',
+                        success: function (data) {
+                            Swal.fire({
+                                title: 'Liked users',
+                                html: generateUserList(data),
+                                confirmButtonText: 'Close',
+                            });
+                        },
+                        error: function (error) {
+                            console.error('Error fetching data:', error);
+                        }
+                    });
+                });
+
+                function generateUserList(users) {
+                    const profileRoute = "{{ route('profile.show', ['id' => '0']) }}";
+                    const route = profileRoute.slice(0, -1);
+                    const defaultUserImage = "{{ asset('images/defaultUser.png') }}";
+                    if (users && Array.isArray(users)) {
+                        return users.map(user => `
+                        <a href='${route}${user.id}' class="modal-link">
+                            <div class="flex items-center mt-3">
+                                <img
+                                    src="${user.image ? '/storage/profilePhotos/' + user.image : defaultUserImage}"
+                                    alt="${user.name}"
+                                    class="rounded-full w-10 h-10 mr-2 object-cover"
+                                >
+                                <span>${user.name}</span>
+                            </div>
+                        </a>
+                    `).join('');
+                    } else {
+                        console.error('userData is null or not an array');
+                    }
+                }
+            });
+        </script>
+
 
         <div class="p-6 md:p-0">
             <p class="text-lg mt-5 mb-5">Comments</p>
             <div>
-                <!-- Display existing comments for the chirp -->
                 @if ($chirp->comments !== null)
                     <div class="max-w-4xl mx-auto">
                         @foreach($chirp->comments as $comment)
@@ -172,7 +202,6 @@
                     </div>
                 @endif
 
-                <!-- Form to add a new comment -->
                 <form method="post" action="{{ route('chirp.storeComment', ['id' => $chirp->id]) }}">
                     @csrf
                     <input type="hidden" name="user_id" value="{{ auth()->id() }}">

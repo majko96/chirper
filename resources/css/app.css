@@ -40,5 +40,10 @@ div:where(.swal2-container) button:where(.swal2-styled).swal2-confirm {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    -webkit-line-clamp: 3; /* Number of lines to show before adding ellipsis */
+    -webkit-line-clamp: 3;
 }
+
+.swal2-popup .swal2-styled:focus {
+    box-shadow: none !important;
+}
+
