@@ -5,7 +5,9 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
+                    <a href="{{ route('chirps.index') }}">
+                        <x-application-logo  class="block h-9 w-auto fill-current text-gray-800" />
+                    </a>
                 </div>
 
                 <!-- Navigation Links -->
@@ -29,6 +31,8 @@
                             <div class="flex items-center">
                                 @if (Auth::user()->image !== null)
                                     <img src="/storage/profilePhotos/{{ Auth::user()->image }}" alt="user-image" class="rounded-full w-10 h-10 mr-2 object-cover">
+                                @else
+                                    <img src="{{ asset('images/defaultUser.png') }}" alt="user-image" class="rounded-full w-10 h-10 mr-2 object-cover">
                                 @endif
                                 {{ Auth::user()->name }}
                             </div>
@@ -77,6 +81,9 @@
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('chirps.index')" :active="request()->routeIs('chirps.index')">
                 {{ __('Chirps') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('users.index')" :active="request()->routeIs('users.index')">
+                {{ __('Users') }}
             </x-responsive-nav-link>
         </div>
 

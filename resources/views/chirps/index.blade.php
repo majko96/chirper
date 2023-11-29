@@ -1,6 +1,6 @@
 <x-app-layout>
-    <div class="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
-        <form method="POST" action="{{ route('chirps.store') }}" enctype="multipart/form-data">
+    <div class="max-w-4xl mx-auto sm:p-6 lg:p-8 pb-4">
+        <form method="POST" action="{{ route('chirps.store') }}" enctype="multipart/form-data" class="p-4 md:p-0">
             @csrf
             <label>
             <textarea
@@ -43,7 +43,7 @@
         </form>
         <hr class="mt-4 mb-4"/>
 
-        <div class="mt-6 mb-6">
+        <div class="mt-6 mb-6 p-4 md:p-0">
             <div class="flex space-x-4 items-center">
                 <div class="w-1/3">
                     <select class="select2" style="width: 100%;"></select>
@@ -60,7 +60,7 @@
                 </div>
             </div>
 
-            <div class="text-right">
+            <div class="text-right mt-4">
                 <x-secondary-button id="reset">{{ __('Reset') }}</x-secondary-button>
                 <x-primary-button id="searchButton" class="ml-2">{{ __('Search') }}</x-primary-button>
             </div>
@@ -224,9 +224,9 @@
             </script>
         </div>
 
-        <div class="mt-6 bg-white shadow-sm rounded-lg divide-y">
+        <div class="mt-6">
             @include('chirps.item')
-            <div>
+            <div class="mt-4">
                 {{ $chirps->links() }}
             </div>
         </div>
