@@ -36,10 +36,10 @@
                             <x-dropdown-link :href="route('chirps.edit', $chirp)">
                                 {{ __('Edit') }}
                             </x-dropdown-link>
-                            <form method="POST" action="{{ route('chirps.destroy', $chirp) }}">
+                            <form method="POST" action="{{ route('chirps.destroy', $chirp) }}" id="deleteForm">
                                 @csrf
                                 @method('delete')
-                                <x-dropdown-link :href="route('chirps.destroy', $chirp)" onclick="event.preventDefault(); this.closest('form').submit();">
+                                <x-dropdown-link class="cursor-pointer" onclick="event.preventDefault(); confirmDelete(event);">
                                     {{ __('Delete') }}
                                 </x-dropdown-link>
                             </form>
@@ -61,4 +61,23 @@
             </a>
         </div>
     </div>
+
+    <script>
+        function confirmDelete(event) {
+            event.preventDefault();
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You won\'t be able to revert this!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#374151',
+                confirmButtonText: 'Yes'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('deleteForm').submit();
+                }
+            });
+        }
+    </script>
 @endforeach

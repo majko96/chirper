@@ -93,18 +93,11 @@
                             dataType: 'json',
                             success: function (data) {
                                 $('#likes-count-' + chirpId).text(data.like_count);
-                                Swal.fire({
-                                            position: "center",
-                                            icon: "success",
-                                            title: data.message,
-                                            showConfirmButton: false,
-                                            timer: 1500
-                                        });
                                 isLiked = !isLiked;
                                 updateButtonAppearance();
                             },
                             error: function (data) {
-                                alert(data.responseJSON.message);
+                                console.log(data.responseJSON.message);
                             }
                         });
                     });
