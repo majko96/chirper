@@ -180,15 +180,15 @@
                                         <p class="text-xs text-gray-500">{{ $comment->created_at->diffForHumans() }}</p>
                                     </div>
                                 </div>
-                                @if ($comment->user->id === auth()->id())
-                                    <div class="flex items-top">
-                                        <form method="post" action="{{ route('chirp.removeComment', ['id' => $chirp->id, 'commentId' => $comment->id]) }}">
-                                            @csrf
-                                            <button type="submit" class=""><i class="fas fa-trash"></i></button>
-                                            <input type="hidden" name="user_id" value="{{ auth()->id() }}">
-                                        </form>
-                                    </div>
-                                @endif
+{{--                                @if ($comment->user->id === auth()->id())--}}
+{{--                                    <div class="flex items-top">--}}
+{{--                                        <form method="post" action="{{ route('chirp.removeComment', ['id' => $chirp->id, 'commentId' => $comment->id]) }}">--}}
+{{--                                            @csrf--}}
+{{--                                            <button type="submit" class=""><i class="fas fa-trash"></i></button>--}}
+{{--                                            <input type="hidden" name="user_id" value="{{ auth()->id() }}">--}}
+{{--                                        </form>--}}
+{{--                                    </div>--}}
+{{--                                @endif--}}
                             </div>
                             <hr>
                         @endforeach

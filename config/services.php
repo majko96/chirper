@@ -31,4 +31,11 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'notifications' => [
+        'database' => [
+            'driver' => 'database',
+            'table' => 'notifications',
+        ],
+    ],
+
 ];

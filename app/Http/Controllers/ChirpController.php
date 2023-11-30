@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NewCommentAdded;
 use App\Models\Chirp;
 use App\Models\Comment;
 use App\Models\Like;
 use App\Models\User;
+use App\Notifications\NewCommentNotification;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -101,6 +103,11 @@ class ChirpController extends Controller
      */
     public function detail($id)
     {
+        auth()->user()->unreadNotifications
+            ->where('type', NewCommentNotification::class)
+            ->where('data.post_id', $id)
+            ->markAsRead();
+
         $chirp = Chirp::with(['user', 'comments.user'])
             ->where('id', $id)
             ->first();
@@ -124,6 +131,8 @@ class ChirpController extends Controller
         ]);
 
         $comment->save();
+        $chirp = Chirp::find($id);
+        event(new NewCommentAdded($chirp, Auth::user()));
 //        return response()->json(['message' => 'Comment added successfully']);
         return redirect(route('chirp.detail', ['id' => $id]));
     }
