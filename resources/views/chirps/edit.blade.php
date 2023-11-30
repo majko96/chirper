@@ -6,6 +6,7 @@
 
             <textarea
                 name="message"
+                rows="5"
                 class="block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
             >{{ old('message', $chirp->message) }}</textarea>
 
@@ -55,7 +56,7 @@
 
             <div class="mt-4 space-x-2 text-right">
                 <x-secondary-button onclick=onCancel();>{{ __('Cancel') }}</x-secondary-button>
-                <x-danger-button onclick="event.preventDefault(); deleteForm();">
+                <x-danger-button onclick="event.preventDefault(); confirmDelete(event);">
                     {{ __('Delete') }}
                 </x-danger-button>
                 <x-primary-button>{{ __('Save') }}</x-primary-button>
@@ -105,12 +106,26 @@
             }
         });
 
-        function deleteForm() {
-            document.getElementById('deleteForm').submit();
-        }
-
         function onCancel() {
             window.location.href = '{{ route("chirps.index") }}';
         }
+
+        function confirmDelete(event) {
+            event.preventDefault();
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You won\'t be able to revert this!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#374151',
+                confirmButtonText: 'Yes'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('deleteForm').submit();
+                }
+            });
+        }
+
     </script>
 </x-app-layout>

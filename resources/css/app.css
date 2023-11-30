@@ -35,3 +35,15 @@ div:where(.swal2-container) button:where(.swal2-styled).swal2-confirm {
     color: #fff;
     font-size: 1em;
 }
+
+.text-container {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    -webkit-line-clamp: 3;
+}
+
+.swal2-popup .swal2-styled:focus {
+    box-shadow: none !important;
+}
+

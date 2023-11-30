@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ChirpApiController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\ChirpController;
 use App\Http\Controllers\ProfileController;
@@ -29,6 +30,9 @@ Route::resource('users', UsersController::class)
     ->only(['index'])
     ->middleware(['auth', 'verified']);
 
+Route::controller(ChirpApiController::class)->group(function(){
+    Route::get('users-likes/{id}', 'usersLikes')->name('usersLikes')->middleware(['auth', 'verified']);
+});
 Route::middleware('auth')->group(function () {
     Route::get('/chirp-detail/{id}', [ChirpController::class, 'detail'])->name('chirp.detail');
     Route::post('/chirp-detail/{id}/add-comment', [ChirpController::class, 'storeComment'])->name('chirp.storeComment');

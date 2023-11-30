@@ -1,5 +1,5 @@
 @foreach ($chirps as $chirp)
-    <div class="p-6 flex space-x-2">
+    <div class="p-6 flex space-x-2 bg-white shadow-sm rounded-lg mb-4">
         <div class="flex-1">
             <div class="flex justify-between items-center">
                 <div class="flex items-center">
@@ -7,9 +7,7 @@
                         @if ($chirp->user->image !== null)
                             <img src="/storage/profilePhotos/{{ $chirp->user->image }}" alt="user-image" class="rounded-full w-10 h-10 mr-2 object-cover">
                         @else
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600 -scale-x-100 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                            </svg>
+                            <img src="{{ asset('images/defaultUser.png') }}" alt="{{ $chirp->user->name }}" class="rounded-full w-10 h-10 mr-2 object-cover">
                         @endif
 
                         <span class="text-gray-800">{{ $chirp->user->name }}</span>&nbsp;
@@ -18,7 +16,7 @@
                         <span class="ml-2 text-gray-600">{{ $chirp->created_at->format('j M Y, H:i') }}</span>
                     @endunless
                     @unless ($chirp->created_at->eq($chirp->updated_at))
-                        <span class="text-gray-600"> &middot; {{ __('edited') }}</span>
+                        <span class="text-gray-600 hidden sm:block"> &middot; {{ __('edited') }}</span>
                         <span class="ml-2 text-gray-600">{{ $chirp->updated_at->format('j M Y H:i') }}</span>
                     @endunless
                     @unless ($chirp->visible == false)
@@ -38,10 +36,10 @@
                             <x-dropdown-link :href="route('chirps.edit', $chirp)">
                                 {{ __('Edit') }}
                             </x-dropdown-link>
-                            <form method="POST" action="{{ route('chirps.destroy', $chirp) }}">
+                            <form method="POST" action="{{ route('chirps.destroy', $chirp) }}" id="deleteForm">
                                 @csrf
                                 @method('delete')
-                                <x-dropdown-link :href="route('chirps.destroy', $chirp)" onclick="event.preventDefault(); this.closest('form').submit();">
+                                <x-dropdown-link class="cursor-pointer" onclick="event.preventDefault(); confirmDelete(event);">
                                     {{ __('Delete') }}
                                 </x-dropdown-link>
                             </form>
@@ -50,17 +48,36 @@
                 @endif
             </div>
             <a href="{{ route('chirp.detail', ['id' => $chirp->id]) }}">
-                <p class="mt-4 text-lg text-gray-900 first-letter">{{ $chirp->message }}</p>
-                <div class="flex justify-center">
+                <div class="flex justify-center mt-4">
                     @if ($chirp->image !== null)
                         <img src="/storage/images/{{ $chirp->image }}" alt="chirp-image">
                     @endif
                 </div>
-                <div class="mt-2">
+                <p class="mt-4 text-lg text-gray-900 first-letter text-container">{{ $chirp->message }}</p>
+                <div class="mt-4">
                     <span id="likes-count-{{ $chirp->id }}"><i class="far fa-thumbs-up"></i> {{ $chirp->likesCount() }}</span>
                     <span id="likes-count-{{ $chirp->id }}"><i class="far fa-comment ml-2"></i> {{ $chirp->commentsCount() }}</span>
                 </div>
             </a>
         </div>
     </div>
+
+    <script>
+        function confirmDelete(event) {
+            event.preventDefault();
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You won\'t be able to revert this!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#374151',
+                confirmButtonText: 'Yes'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('deleteForm').submit();
+                }
+            });
+        }
+    </script>
 @endforeach
