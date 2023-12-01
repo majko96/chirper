@@ -38,7 +38,7 @@
                 <img id="preview" src="#" alt="your image" class="mt-3 w-60" style="display:none;"/>
             </div>
             <div class="text-right">
-                <x-primary-button class="mt-4 w-full sm:w-auto">{{ __('Chirp') }}</x-primary-button>
+                <x-primary-button class="mt-4 w-full sm:w-auto">{{ __('Add new') }}</x-primary-button>
             </div>
         </form>
         <hr class="mt-4 mb-4"/>
